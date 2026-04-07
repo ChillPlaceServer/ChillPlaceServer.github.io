@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutoriel PollyMC - Serveur ChillPlace</title>
+    <!-- Polices -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- Icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-base: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-surface-hover: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --code-bg: #0b1120;
+            --border: #334155;
+            --radius: 12px;
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        /* ----- Typographie ----- */
+        h1,
+        h2,
+        h3 {
+            color: var(--text-main);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+            color: var(--accent);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* ----- Markdown & Composants ----- */
+        code:not(pre code) {
+            background-color: var(--code-bg);
+            color: #38bdf8;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: var(--font-code);
+            font-size: 0.9em;
+            border: 1px solid var(--border);
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 1rem;
+            border-radius: var(--radius);
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        pre code {
+            font-family: var(--font-code);
+            color: #e2e8f0;
+            font-size: 0.9em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2em 0.6em;
+            font-size: 0.8em;
+            font-weight: 600;
+            border-radius: 20px;
+            background-color: var(--bg-surface-hover);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .badge.version {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        ul,
+        ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        li::marker {
+            color: var(--accent);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        /* ----- Alertes ----- */
+        .alert {
+            padding: 1rem 1.2rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+        }
+
+        .alert i {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .alert.info {
+            border-left: 4px solid var(--accent);
+        }
+
+        .alert.info i {
+            color: var(--accent);
+        }
+
+        .alert.warning {
+            border-left: 4px solid var(--warning);
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .alert.warning i {
+            color: var(--warning);
+        }
+
+        .alert.danger {
+            border-left: 4px solid var(--danger);
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .alert.danger i {
+            color: var(--danger);
+        }
+
+        .alert.success {
+            border-left: 4px solid var(--success);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .alert.success i {
+            color: var(--success);
+        }
+
+        .alert p {
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        /* ----- Boutons ----- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--font-main);
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+        }
+
+        .btn-copy {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+        }
+
+        .btn-copy:disabled {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            cursor: not-allowed;
+        }
+
+        /* ----- Layout : Sidebar & Main ----- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sidebar-logo i {
+            color: var(--success);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+        }
+
+        main {
+            margin-left: 280px;
+            padding: 3rem 4rem;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        /* ----- Cartes / Sections ----- */
+        .card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ----- Espaces Réservés pour Images (Placeholders) ----- */
+        .img-placeholder {
+            width: 100%;
+            min-height: 250px;
+            background-color: #151e2e;
+            border: 2px dashed #475569;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            color: #94a3b8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .img-placeholder::before {
+            content: "\f03e";
+            /* FontAwesome image icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #334155;
+        }
+
+        .img-placeholder p.instructions {
+            font-size: 0.9rem;
+            max-width: 80%;
+            margin-top: 0.5rem;
+        }
+
+        /* Style réel de l'image une fois insérée (elle remplacera ou couvrira le placeholder) */
+        .img-placeholder img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: var(--radius);
+            z-index: 2;
+            display: none;
+            /* Affiche "block" quand une source est ajoutée */
+        }
+
+        /* Règle CSS : Si l'image a un src défini, on l'affiche */
+        .img-placeholder img[src]:not([src=""]) {
+            display: block;
+            background-color: var(--bg-surface);
+        }
+
+        /* ----- Animations ----- */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ----- Scroll to top ----- */
+        #scrollTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--accent);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        #scrollTopBtn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 50;
+                transition: transform 0.3s;
+            }
+
+            main {
+                margin-left: 0;
+                padding: 2rem;
+            }
+
+            /* Ajouter un bouton burger pour mobile si nécessaire dans le futur */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Barre latérale de navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fa-solid fa-gamepad"></i>
+            ChillPlace
+        </div>
+        <ul class="nav-links">
+            <li><a href="#intro" class="active"><i class="fa-solid fa-house"></i> Accueil</a></li>
+            <li><a href="#prerequis"><i class="fa-solid fa-clipboard-check"></i> 1. Prérequis</a></li>
+            <li><a href="#telechargement"><i class="fa-solid fa-download"></i> 2. Téléchargement</a></li>
+            <li><a href="#configuration"><i class="fa-solid fa-gear"></i> 3. Configuration</a></li>
+            <li><a href="#profil"><i class="fa-solid fa-user"></i> 4. Profil Crack</a></li>
+            <li><a href="#instance"><i class="fa-solid fa-cube"></i> 5. Instance 1.21.11</a></li>
+            <li><a href="#lancement"><i class="fa-solid fa-play"></i> 6. Rejoindre !</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main>
+        <section id="intro" class="fade-in">
+            <h1>Bienvenue sur ChillPlace 🌍</h1>
+            <p>Ce guide détaillé va t'accompagner pas à pas pour installer et configurer <strong>PollyMC</strong>, un
+                launcher Minecraft cracké optimisé, afin de rejoindre le serveur privé entre amis dans la version <span
+                    class="badge version">1.21.11</span>.</p>
+
+            <div class="alert info">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                    <p><strong>Prends ton temps !</strong> Lisez bien chaque étape sans vous précipiter. Les erreurs
+                        courantes viennent souvent d'une étape sautée (comme l'installation de Java).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ETAPE 1 -->
+        <section id="prerequis" class="card fade-in">
+            <h2><i class="fa-solid fa-1"></i> Prérequis Système</h2>
+            <p>Avant même de télécharger le jeu, il faut préparer ton ordinateur. Minecraft 1.21.11 a des exigences
+                strictes.</p>
+
+            <h3>☕ 1. Installer Java 21 (Obligatoire)</h3>
+            <p>Pour la version 1.21.11, il est <strong>impératif d'installer Java 21</strong>. Sans cela, le jeu
+                refusera
+                tout simplement de se lancer ou affichera une erreur incompréhensible.</p>
+
+            <div class="alert danger">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <p>Même si vous avez déjà Java 8 ou Java 17 installé, cela ne suffira pas. Vous devez impérativement
+                        avoir <strong>Java 21</strong>.</p>
+                </div>
+            </div>
+
+            <ol>
+                <li>Allez sur le site officiel de téléchargement (Ex: Eclipse Adoptium).</li>
+                <a href="https://adoptium.net/fr/download?link=https%3A%2F%2Fgithub.com%2Fadoptium%2Ftemurin21-binaries%2Freleases%2Fdownload%2Fjdk-21.0.10%252B7%2FOpenJDK21U-jre_x64_windows_hotspot_21.0.10_7.zip&vendor=Adoptium"
+                    target="_blank" class="btn btn-outline"><i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    Télécharger Java 21</a>
+                <li>Le fichier va se télécharger automatiquement, vous devriez avoir une interface similaire à celle sur
+                    l'image.</li>
+                <div class="img-placeholder" data-desc="Image : Capture d'écran du site d'Adoptium.">
+                    <img src="https://i.ibb.co/WvDrLk9D/Capture-d-cran-2026-04-07-195503.png"
+                        alt="Installation Java 21">
+                </div>
+                <li>Une fois le fichier .zip téléchargé, allez dans votre explorateur de fichiers, puis entrez dans le
+                    dossier .zip téléchargé.</li>
+                <li>Cliquez sur le dossier nommé <code>jdk-21.0.10+7-jre</code> puis glissez le en dehors du fichier
+                    .zip (vous pouvez voir une image d'illustration en dessous)</li>
+                <div class="img-placeholder" data-desc="Image : Glissez le dossier en dehors du fichier .zip.">
+                    <img src="https://i.ibb.co/C3vfZpbG/Capture-d-cran-2026-04-07-200326.png"
+                        alt="Glissez le dossier en dehors du fichier .zip">
+                </div>
+                <li>Vous pouvez maintenant sortir du dossier .zip, et le supprimer en vérifiant que vous avez bien
+                    maintenant un dossier appelé <code>jdk-21.0.10+7-jre</code>.</li>
+                <div class="img-placeholder" data-desc="Image : Vous devriez avoir ceci.">
+                    <img src="https://i.ibb.co/RpHRLyh9/Capture-d-cran-2026-04-07-200846.png"
+                        alt="Vous devriez avoir ceci">
+                </div>
+            </ol>
+
+            <div class="alert danger">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <p>Ne supprimez pas le dossier <code>jdk-21.0.10+7-jre</code>, sinon Minecraft ne se lancera pas.
+                        Gardez-le dans un endroit que vous connaissez !
+                    </p>
+                </div>
+            </div>
+
+            <h3>🎮 2. Pilotes Graphiques</h3>
+            <p>Vérifie que les pilotes de ta carte graphique (NVIDIA, AMD ou Intel) sont à jour. Les nouvelles versions
+                de Minecraft utilisent des moteurs de rendu récents qui peuvent faire planter un PC avec de vieux
+                pilotes. Pour vérifier que vos pilotes sont à jour, vous pouvez utiliser l'application GeForce
+                Experience
+                pour les cartes graphiques NVIDIA, AMD Radeon Software pour les cartes graphiques AMD et Intel Driver &
+                Support Assistant pour les cartes graphiques Intel. Les ordinateurs fournis par le lycée Alain Chartier
+                sont déjà à jours sur ce sujet, vous pouvez passer cette étape. Si vous bloquez ici, vous pouvez
+                contacter <strong>TurtleSmile</strong> sur discord.</p>
+        </section>
+
+        <!-- ETAPE 2 -->
+        <section id="telechargement" class="card fade-in">
+            <h2><i class="fa-solid fa-2"></i> Téléchargement et Extraction</h2>
+            <p>Maintenant que le PC est prêt, récupérons le launcher <strong>PollyMC</strong>.</p>
+
+            <ol>
+                <li>Clique sur le lien ci-dessous pour accéder au Google Drive contenant les fichiers.</li>
+                <a href="https://drive.google.com/file/d/1skWhz_tccPGYOuellUXmORYUekdGtUwp/view?usp=sharing"
+                    target="_blank" class="btn"><i class="fa-brands fa-google-drive"></i> Télécharger PollyMC.zip</a>
+                <li>Cliquez ensuite sur le bouton <strong>Télécharger</strong>, puis sur <strong>Télécharger quand
+                        même</strong>.</li>
+                <div class="img-placeholder" data-desc="Image : Capture d'écran du téléchargement de PollyMC.">
+                    <img src="https://i.ibb.co/gnCx4yN/Capture-d-cran-2026-04-07-201439.png"
+                        alt="Téléchargement de PollyMC">
+                </div>
+                <div class="img-placeholder"
+                    data-desc="Image : Capture d'écran de la validation du téléchargement de PollyMC.">
+                    <img src="https://i.ibb.co/ZzR9SHxT/Capture-d-cran-2026-04-07-201451.png"
+                        alt="Validation du téléchargement de PollyMC">
+                </div>
+            </ol>
+
+            <div class="alert warning">
+                <i class="fa-solid fa-file-zipper"></i>
+                <div>
+                    <p><strong>L'extraction est CRUCIALE :</strong> Ne double-clique surtout pas sur le programme
+                        directement depuis l'archive zip ! Tu dois impérativement extraire le dossier. Pour ce faire,
+                        retourne à l'étape n°3 de la première partie, tu devrais à la fin avoir un résultat comme ceci
+                    </p>
+                </div>
+            </div>
+            <div class="img-placeholder" data-desc="Image : Le dossier PollyMC téléchargé et prêt.">
+                <img src="https://i.ibb.co/0psQHBG1/Capture-d-cran-2026-04-07-201826.png" alt="Le dossier PollyMC prêt">
+            </div>
+
+            <div class="alert info">
+                <div>
+                    <p>Tu peux également utiliser cette méthode pour extraire le dossier, elle fonctionne également,
+                        n'oublie juste pas de mettre ton dossier là où tu veux, de le renommer, et de supprimer les
+                        sous-dossiers inutiles (quand tu as <code>PollyMC-Windows-MinGW-w64-Portable-8.0</code> puis
+                        <code>PollyMC</code>... Cela ne fera que t'embêter ensuite, fais en sorte d'avoir
+                        <code>PollyMC</code> puis tous les fichiers / dossiers du jeu)
+                        <br>
+                        <br>
+                        Si tu as déjà extrait ton dossier <code>PollyMC</code> en utilisant la première méthode, tu peux
+                        passer ces 4 étapes !
+                    </p>
+                </div>
+            </div>
+            <ol start="1">
+                <li>Fais un clic-droit sur le fichier <code>.zip</code> téléchargé.</li>
+                <li>Sélectionne <strong>"Extraire tout..."</strong> (ou utilise WinRAR / 7-Zip si tu l'as).</li>
+                <div class="img-placeholder"
+                    data-desc="Image : Menu contextuel Windows (Clic droit) montrant l'option 'Extraire tout...'">
+                    <img src="https://i.ibb.co/0vh8dt6/Capture-d-cran-2026-04-07-203014.png" alt="Menu extraire tout">
+                </div>
+                <li>Choisis un endroit sûr (comme ton Bureau ou tes Documents) en cliquant sur
+                    <strong>Parcourir</strong>.
+                </li>
+                <li>Lance l'extraction en cliquant sur <strong>extraire</strong></li>
+                <div class="img-placeholder"
+                    data-desc="Image : Menu contextuel Windows (Clic droit) montrant l'option 'Extraire tout...'">
+                    <img src="https://i.ibb.co/TqwSHDyp/Capture-d-cran-2026-04-07-202919.png" alt="Menu extraire tout">
+                </div>
+            </ol>
+        </section>
+
+        <!-- ETAPE 3 -->
+        <section id="configuration" class="card fade-in">
+            <h2><i class="fa-solid fa-3"></i> Configuration initiale de PollyMC</h2>
+
+            <p>Rends-toi dans le dossier que tu viens d'extraire. Tu y trouveras un fichier nommé
+                <code>pollymc.exe</code>. Double-clique dessus pour le lancer.
+            </p>
+
+            <ol>
+                <li>Une fenêtre de bienvenue apparaît. Cliquez sur <strong>Browse</strong>, puis entrez dans le dossier
+                    <code>jdk-21.0.10+7-jre</code> téléchargé plus tôt.
+                </li>
+                <div class="img-placeholder"
+                    data-desc="Image : Écran de configuration de PollyMC à l'étape du choix de la version Java.">
+                    <img src="https://i.ibb.co/Hf5HrfDw/Capture-d-cran-2026-04-07-204527.png" alt="">
+                </div>
+                <li>Dans le dossier ouvert, va dans <code>bin</code>, puis sélectionne <code>javaw.exe</code>.
+                </li>
+                <div class="img-placeholder"
+                    data-desc="Image : Écran de configuration de PollyMC à l'étape du choix de la version Java.">
+                    <img src="https://i.ibb.co/bR61HKXg/12.png" alt="">
+                </div>
+                <div class="img-placeholder"
+                    data-desc="Image : Écran de configuration de PollyMC à l'étape du choix de la version Java.">
+                    <img src="https://i.ibb.co/LhQZ6v03/Capture-d-cran-2026-04-07-204656.png" alt="">
+                </div>
+                <li>Laisse les paramètres de mémoire (RAM) par défaut, à moins que tu saches ce que tu fais (4096 Mo est
+                    un bon début).</li>
+                <li>Clique sur <em>Terminer</em>.</li>
+                <li>La fenêtre par défaut de <strong>PollyMC</strong> devrait s'ouvrir sous quelques secondes.</li>
+            </ol>
+        </section>
+
+        <!-- ETAPE 4 -->
+        <section id="profil" class="card fade-in">
+            <h2><i class="fa-solid fa-4"></i> Création d'un profil "Crack" (Hors-ligne)</h2>
+            <p>Pour jouer sans compte officiel acheté, nous allons créer un compte local (Hors-ligne).</p>
+
+            <ol>
+                <li>En haut à droite du launcher PollyMC, clique sur le menu <strong>Comptes</strong>, puis sur
+                    <strong>Configurer les comptes</strong>.
+                </li>
+                <div class="img-placeholder" data-desc="Image : Écran de configuration de PollyMC, création du compte.">
+                    <img src="https://i.ibb.co/Rpsb7hqr/Capture-d-cran-2026-04-07-212428.png" alt="">
+                </div>
+                <li>Clique sur le bouton <strong>Ajouter un compte hors-ligne</strong> (ou <em>Offline account</em>).
+                </li>
+                <div class="img-placeholder" data-desc="Image : Écran de configuration de PollyMC, création du compte.">
+                    <img src="https://i.ibb.co/YFKc4ntd/Capture-d-cran-2026-04-07-212546.png" alt="">
+                </div>
+                <li>Une petite fenêtre apparaît. <strong>Saisis ton pseudonyme.</strong> Quand tu as fini, clique sur
+                    <em>OK</em>.
+                </li>
+                <div class="img-placeholder" data-desc="Image : Écran de configuration de PollyMC, création du compte.">
+                    <img src="https://i.ibb.co/pvJ4vL1v/Capture-d-cran-2026-04-07-212600.png" alt="">
+                </div>
+                <li>Tu peux maintenant voir ton compte dans la liste. Clique sur <strong>Close</strong>.</li>
+            </ol>
+
+            <div class="alert info">
+                <i class="fa-solid fa-lightbulb"></i>
+                <div>
+                    <p>Ce nom sera celui affiché dans le chat et au-dessus de ta tête en jeu. Choisis bien !</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ETAPE 5 -->
+        <section id="instance" class="card fade-in">
+            <h2><i class="fa-solid fa-5"></i> Installation de l'instance 1.21.11</h2>
+            <p>Une "instance" est une installation de Minecraft. PollyMC permet d'en avoir plusieurs. Créons celle pour
+                notre serveur.</p>
+
+            <ol>
+                <li>Dans le menu principal, clique sur le gros bouton <strong>Ajouter une instance</strong> (en haut à
+                    gauche).</li>
+                <div class="img-placeholder"
+                    data-desc="Image : Fenêtre de création d'instance avec la version 1.21.11 sélectionnée.">
+                    <img src="https://i.ibb.co/KxQQcNyW/Capture-d-cran-2026-04-07-213131.png" alt="">
+                </div>
+                <li>Dans la liste des versions, assure-toi d'être dans l'onglet "Personnalisé", que la catégorie
+                    "Filtre" est sur <code>"Versions officielles"</code>, que "Chargeur de mods" est sur
+                    <code>"Aucun"</code> et
+                    sélectionne la version <span class="badge version">1.21.11</span>.
+                </li>
+                <div class="img-placeholder"
+                    data-desc="Image : Fenêtre de création d'instance avec la version 1.21.11 sélectionnée.">
+                    <img src="https://i.ibb.co/G4zbQzt1/Capture-d-cran-2026-04-07-213333.png" alt="">
+                </div>
+                <li>Donne-lui un nom sympa, comme <em>"ChillPlace Serveur"</em>.</li>
+                <div class="img-placeholder"
+                    data-desc="Image : Fenêtre de création d'instance avec la version 1.21.11 sélectionnée.">
+                    <img src="https://i.ibb.co/Mx3ryWjL/Capture-d-cran-2026-04-07-213350.png" alt="">
+                </div>
+                <li>Clique sur <strong>OK</strong>.</li>
+            </ol>
+
+            <h3>🧩 Optionnel : Installer des Mods (Fabric)</h3>
+            <p>Si ton PC manque de puissance ou si tu veux des shaders, tu peux utiliser Fabric :</p>
+            <ul>
+                <li>Fais un clic droit sur ton instance fraîchement créée -> <em>Modifier...</em>.</li>
+                <li>Va dans l'onglet <em>Version</em> et clique sur <strong>Installer le Loader</strong> sur la droite,
+                    puis sur <code>Fabric</code>.
+                    Laisse la version recommandée et valide.</li>
+                <li>Tu pourras ensuite ajouter les mods que tu souhaites</li>
+            </ul>
+            <div class="alert warning" style="margin-top: 2rem;">
+                <div>
+                    <p><strong>Attention !</strong> Cette partie n'est pas obligatoire, je ne donne donc pas plus de
+                        détails !</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ETAPE 6 -->
+        <section id="lancement" class="card fade-in"
+            style="border: 1px solid var(--success); position: relative; overflow: hidden;">
+            <!-- Petit effet visuel pour la section finale -->
+            <div
+                style="position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: var(--success); filter: blur(60px); opacity: 0.3;">
+            </div>
+
+            <h2><i class="fa-solid fa-6"></i> Lancement du jeu et Connexion</h2>
+            <p>C'est l'heure de vérité !</p>
+
+            <ol>
+                <li>Double-clique sur ton instance <em>"ChillPlace Serveur"</em> dans PollyMC.</li>
+                <div class="img-placeholder"
+                    data-desc="Image : Ouverture de l'instance 'ChillPlace Serveur' dans PollyMC.">
+                    <img src="https://i.ibb.co/Q7HFbDhy/Capture-d-cran-2026-04-07-214137.png" alt="">
+                </div>
+                <li>Le launcher va télécharger automatiquement tous les fichiers du jeu depuis les serveurs de Mojang
+                    (ça peut prendre quelques minutes selon ta connexion).</li>
+                <li>Une fois terminé, le menu principal de Minecraft s'ouvre.</li>
+                <li>Désactive le narrateur (<strong>Narrator: OFF</strong>), change la langue si besoin
+                    (<strong>Language...</strong>) et clique sur <strong>Continue</strong>.</li>
+                <div class="img-placeholder" data-desc="Image : Menu principal de Minecraft.">
+                    <img src="https://i.ibb.co/8gj5tPfd/Capture-d-cran-2026-04-07-214655.png" alt="">
+                </div>
+                <li>Te voilà sur la page d'accueil de Minecraft, tu peux cliquer sur <strong>Options...</strong> si tu
+                    as
+                    besoin de changer des paramètres, et appuie ensuite sur <strong>Multiplayer</strong>.</li>
+                <div class="img-placeholder" data-desc="Image : Menu principal de Minecraft.">
+                    <img src="https://i.ibb.co/BKsTVgR5/Capture-d-cran-2026-04-07-214752.png" alt="">
+                </div>
+                <li>La première fois, une popup de confirmation apparaît, appuie sur
+                    <strong>Do not show this screen again</strong> puis sur <strong>Proceed</strong>.
+                </li>
+                <div class="img-placeholder" data-desc="Image : Menu principal de Minecraft.">
+                    <img src="https://i.ibb.co/jkxp6DSf/Capture-d-cran-2026-04-07-214805.png" alt="">
+                </div>
+                <li>Clique ensuite sur <strong>Add Server</strong>.</li>
+                <div class="img-placeholder" data-desc="Image : Menu principal de Minecraft.">
+                    <img src="https://i.ibb.co/20hXXTHB/Capture-d-cran-2026-04-07-214818.png" alt="">
+                </div>
+                <li>Remplis les champs comme suit :
+                    <ul>
+                        <li>Nom du serveur : <em>ChillPlace</em></li>
+                        <li>Adresse du serveur : <br>
+                            <div style="position: relative; display: inline-block; width: 100%; margin-top: 5px;">
+                                <pre style="margin: 0;"><code>Bientôt disponible...</code></pre>
+                                <button disabled class="btn btn-copy"
+                                    onclick="copyToClipboard('Bientôt disponible...', this)">Copier l'IP</button>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <div class="img-placeholder" data-desc="Image : Menu principal de Minecraft.">
+                    <img src="https://i.ibb.co/cSQRbqKb/Capture-d-cran-2026-04-07-214845-2.png" alt="">
+                </div>
+                <li>Appuie sur <strong>Done</strong>, puis sélectionne le serveur apparu et appuie sur <strong>Join
+                        Server</strong>.</li>
+                <div class="img-placeholder" data-desc="Image : Menu principal de Minecraft.">
+                    <img src="https://i.ibb.co/dh33xQ5/Capture-d-cran-2026-04-07-214900.png" alt="">
+                </div>
+                <li>Te voilà enfin sur l'écran de connexion vers notre serveur, bienvenue !</li>
+                <div class="img-placeholder" data-desc="Image : Bienvenue !">
+                    <img src="https://i.ibb.co/Qjb0Bt8M/Capture-d-cran-2026-04-07-215036.png" alt="">
+                </div>
+            </ol>
+
+            <div class="alert success" style="margin-top: 2rem;">
+                <i class="fa-solid fa-party-horn" style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">🎉</i>
+                <div>
+                    <p><strong>Félicitations !</strong> Tu es maintenant connecté au serveur. Bon jeu à toi !</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bouton remonter en haut -->
+    <button id="scrollTopBtn" title="Retour en haut"><i class="fa-solid fa-arrow-up"></i></button>
+
+    <script>
+        // 1. Logique de copie dans le presse-papier
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fa-solid fa-check"></i> Copié !';
+                button.style.backgroundColor = 'var(--success)';
+                button.style.color = 'white';
+                button.style.border = 'none';
+
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style = ''; // Reset styles to class defaults
+                }, 2000);
+            }).catch(err => {
+                console.error("Erreur lors de la copie :", err);
+            });
+        }
+
+        // 2. Bouton "Scroll to top"
+        const scrollTopBtn = document.getElementById("scrollTopBtn");
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add("show");
+            } else {
+                scrollTopBtn.classList.remove("show");
+            }
+        });
+        scrollTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        // 3. Animations au défilement (Intersection Observer)
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Ne s'anime qu'une fois
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            observer.observe(element);
+        });
+
+        // 4. Mise en surbrillance du menu de navigation lors du scroll
+        const sections = document.querySelectorAll("section");
+        const navLinks = document.querySelectorAll(".nav-links a");
+
+        window.addEventListener("scroll", () => {
+            let current = "";
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute("id");
+                }
+            });
+
+            navLinks.forEach((link) => {
+                link.classList.remove("active");
+                if (link.getAttribute("href").includes(current) && current !== "") {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
